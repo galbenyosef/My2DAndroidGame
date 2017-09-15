@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "61291330830",
+    "firebase_url": "https://collectminigame.firebaseio.com",
+    "project_id": "collectminigame",
+    "storage_bucket": "collectminigame.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:61291330830:android:374a4b2ab86b5985",
+        "android_client_info": {
+          "package_name": "com.chalandriani.collectminigame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "61291330830-ous2e5commn6ft4h06snht4kgfike6h3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chalandriani.collectminigame",
+            "certificate_hash": "d73eac588824bab4127d14cb8ddfed1035c42b61"
+          }
+        },
+        {
+          "client_id": "61291330830-8gko64vuk6l2s663merkc21mqdv7sfn7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD121lMPieHh31aBBO6RsmjKZKjMIGZeAY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "61291330830-8gko64vuk6l2s663merkc21mqdv7sfn7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
