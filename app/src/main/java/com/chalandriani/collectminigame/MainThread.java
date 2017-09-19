@@ -1,12 +1,12 @@
 package com.chalandriani.collectminigame;
 
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 public class MainThread extends Thread
 {
-    private int FPS = 30;
-    private double averageFPS;
+    private int FPS = 10;
     private SurfaceHolder surfaceHolder;
     private GameScreen gameScreen;
     private boolean running;
@@ -24,11 +24,13 @@ public class MainThread extends Thread
         long startTime;
         long timeMillis;
         long waitTime;
-        long totalTime = 0;
         int frameCount =0;
         long targetTime = 1000/FPS;
 
         while(running) {
+            try{
+                this.sleep(10000);
+            }catch(Exception e){}
             startTime = System.nanoTime();
             canvas = null;
 
@@ -40,6 +42,7 @@ public class MainThread extends Thread
                     this.gameScreen.draw(canvas);
                 }
             } catch (Exception e) {
+                Log.d("EX",e.getMessage());
             }
             finally{
                 if(canvas!=null)
@@ -58,14 +61,10 @@ public class MainThread extends Thread
                 this.sleep(waitTime);
             }catch(Exception e){}
 
-            totalTime += System.nanoTime()-startTime;
             frameCount++;
             if(frameCount == FPS)
             {
-                averageFPS = 1000/((totalTime/frameCount)/1000000);
-                frameCount =0;
-                totalTime = 0;
-                System.out.println("your fps: " +averageFPS);
+                frameCount=0;
             }
         }
     }

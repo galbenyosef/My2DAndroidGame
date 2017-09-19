@@ -13,10 +13,11 @@ public abstract class GameObject {
     protected int dx;
     protected int width;
     protected int height;
-    protected Rect rectangle;
     protected boolean moving;
     protected int direction;
+    protected int old_direction;
     protected int speed;
+    protected int rect_x_begin,rect_y_begin,rect_x_end,rect_y_end;
 
     public void setX(int x)
     {
@@ -73,8 +74,16 @@ public abstract class GameObject {
         return speed;
     }
 
-    public void setDirection(int direction) {
-        this.direction = direction;
+    public void setDirection(int newdirection) {
+        this.direction = newdirection;
+    }
+
+    public void setOld_direction(int direction) {
+        this.old_direction = direction;
+    }
+
+    public int getOld_direction() {
+        return old_direction;
     }
 
     public void setMoving(boolean moving) {
@@ -85,11 +94,30 @@ public abstract class GameObject {
         this.speed = speed;
     }
 
-    public Rect getRectangle()
-    {
-        return rectangle;
+    public int getRect_x_begin() {
+        return rect_x_begin;
     }
 
-    public void setRectangle(Rect rectangle){this.rectangle = rectangle;}
+    public int getRect_x_end() {
+        return rect_x_end;
+    }
+
+    public int getRect_y_begin() {
+        return rect_y_begin;
+    }
+
+    public int getRect_y_end() {
+        return rect_y_end;
+    }
+
+    public void setRectangle(int x, int y, int x_offset, int y_offset){
+
+        this.rect_x_begin = x;
+        this.rect_x_end = x_offset;
+        this.rect_y_begin=y;
+        this.rect_y_end=y_offset;
+
+    }
+
 
 }

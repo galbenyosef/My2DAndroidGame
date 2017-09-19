@@ -28,7 +28,6 @@ public class JoystickView extends View {
     private double centerX = 0; // Center view x position
     private double centerY = 0; // Center view y position
     private int lastAngle = 0;
-    private int lastPower = 0;
     private int buttonRadius;
     private int joystickRadius;
     private OnJoystickMoveListener listener;
@@ -93,8 +92,8 @@ public class JoystickView extends View {
     protected void onSizeChanged(int xNew, int yNew, int xOld, int yOld) {
         super.onSizeChanged(xNew, yNew, xOld, yOld);
         // before measure, get the center of view
-        xPosition = (int) getWidth() / 2;
-        yPosition = (int) getWidth() / 2;
+        xPosition =  getWidth() / 2;
+        yPosition =  getWidth() / 2;
         int d = Math.min(xNew, yNew);
         buttonRadius = (int) (d / 2 * 0.25);
         joystickRadius = (int) (d / 2 * 0.75);
@@ -112,7 +111,7 @@ public class JoystickView extends View {
     }
 
     private int measure(int measureSpec) {
-        int result = 0;
+        int result;
         // Decode the measurement specifications.
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
@@ -164,7 +163,7 @@ public class JoystickView extends View {
                 yPosition = (int) ((yPosition - centerY) * joystickRadius / abs + centerY);
             }
 
-            Log.d(TAG, "Angle:" + getAngle() + "Power:" + getPower());
+            //Log.d(TAG, "Angle:" + getAngle() + "Power:" + getPower());
 
             // Pressure
             if (listener != null) {

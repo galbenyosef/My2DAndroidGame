@@ -25,42 +25,6 @@ public class Animation {
 
     public void setFrame(int i){currentFrame= i;}
 
-    public static Animation makeAnimation(Bitmap res, int width, int height, int frames, int k){
-
-        Bitmap[] images = new Bitmap[frames];
-
-        for (int i = 0; i < images.length; i++)
-        {
-            images[i] =  Bitmap.createBitmap(res, i*width , k*height, width, height);
-        }
-
-        return new Animation(images,2);
-    }
-
-    public static Animation getWalkAnimation(Bitmap res, int width, int height, int direction){
-
-        switch (direction){
-            case JoystickView.UP:
-                return makeAnimation(res,width,height,9,0);
-            case JoystickView.DOWN:
-                return makeAnimation(res,width,height,9,2);
-            case JoystickView.RIGHT:
-                return makeAnimation(res,width,height,9,3);
-            case JoystickView.LEFT:
-                return makeAnimation(res,width,height,9,1);
-            case JoystickView.UP_LEFT:
-                return makeAnimation(res,width,height,9,1);
-            case JoystickView.UP_RIGHT:
-                return makeAnimation(res,width,height,9,3);
-            case JoystickView.DOWN_LEFT:
-                return makeAnimation(res,width,height,9,1);
-            case JoystickView.DOWN_RIGHT:
-                return makeAnimation(res,width,height,9,3);
-            default:
-                return makeAnimation(res,width,height,2,2);
-        }
-
-    }
 
     public void update()
     {

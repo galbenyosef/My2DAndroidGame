@@ -18,9 +18,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 
 public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
@@ -29,10 +31,11 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
     public static final int HEIGHT = 480;
     private MainThread thread;
     private Background bg;
+    private AnimationManager animator;
     private Player player,player2;
-    private Animation walkup,walkleft,walkdown,walkright,current;
+    private int playerCount = 0;
 
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    FirebaseDatabase database ;
 
     public GameScreen(Context context)
     {
@@ -41,6 +44,9 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
 
     public GameScreen(Context context, AttributeSet attrs) {
         super (context, attrs);
+
+        animator = new AnimationManager(getResources());
+        database  = FirebaseDatabase.getInstance();
         //add the callback to the surfaceholder to intercept events
         getHolder().addCallback(this);
         thread = new MainThread(getHolder(), this);
@@ -97,44 +103,96 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
         ((FrameLayout)rootView).addView(joyview);
     }
 
+    ValueEventListener playerUpdater = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            GenericTypeIndicator<Map<String,Player>> player_db = new GenericTypeIndicator<Map<String,Player>>(){};
+            if (dataSnapshot.getValue(player_db) != null) {
+                ArrayList<Player> players_updates = new ArrayList<>(dataSnapshot.getValue(player_db).values());
+                playerCount = players_updates.size();
+                if (playerCount == 0) return;
+                for (int i = 0; i < players_updates.size(); i++) {
+                    Player currentPlayer = players_updates.get(i);
+                    if (!currentPlayer.getPlayerName().equals(player.getPlayerName())) {
+                        player2.setPlayerName(currentPlayer.getPlayerName());
+                        player2.setX(currentPlayer.getX());
+                        player2.setY(currentPlayer.getY());
+                        player2.setDirection(currentPlayer.getDirection());
+                        player2.setOld_direction(currentPlayer.getOld_direction());
+                        player2.setWidth(currentPlayer.getWidth());
+                        player2.setHeight(currentPlayer.getHeight());
+                        player2.setMoving(currentPlayer.isMoving());
+                        player2.setSpeed(currentPlayer.getSpeed());
+
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError error) {
+            // Failed to read value
+        }
+    };
+
+    ValueEventListener playerReader = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            GenericTypeIndicator<Map<String,Player>> player_db = new GenericTypeIndicator<Map<String,Player>>(){};
+            if (dataSnapshot.getValue(player_db) != null) {
+                ArrayList<Player> players_updates = new ArrayList<>(dataSnapshot.getValue(player_db).values());
+                playerCount = players_updates.size();
+                if (playerCount == 0) return;
+                for (int i = 0; i < players_updates.size(); i++) {
+                    Player currentPlayer = players_updates.get(i);
+                    if (!currentPlayer.getPlayerName().equals(player.getPlayerName())) {
+                        player2.setPlayerName(currentPlayer.getPlayerName());
+                        player2.setX(currentPlayer.getX());
+                        player2.setY(currentPlayer.getY());
+                        player2.setDirection(currentPlayer.getDirection());
+                        player2.setOld_direction(currentPlayer.getOld_direction());
+                        player2.setWidth(currentPlayer.getWidth());
+                        player2.setHeight(currentPlayer.getHeight());
+                        player2.setMoving(currentPlayer.isMoving());
+                        player2.setSpeed(currentPlayer.getSpeed());
+
+                    } else {
+                        player.setPlayerName(currentPlayer.getPlayerName());
+                        player.setX(currentPlayer.getX());
+                        player.setY(currentPlayer.getY());
+                        player.setDirection(currentPlayer.getDirection());
+                        player.setOld_direction(currentPlayer.getOld_direction());
+                        player.setWidth(currentPlayer.getWidth());
+                        player.setHeight(currentPlayer.getHeight());
+                        player.setMoving(currentPlayer.isMoving());
+                        player.setSpeed(currentPlayer.getSpeed());
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
     @Override
     public void surfaceCreated(SurfaceHolder holder){
 
-        ValueEventListener playerReader = (new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // GenericTypeIndicator<HashMap<String,PlayerState>> data_base = new GenericTypeIndicator<HashMap<String,PlayerState>>(){};
-                Player data_messages = dataSnapshot.getValue(Player.class);
-                Log.d("bug", data_messages.toString());
-                if (data_messages == null) return;
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inScaled = false;
-                player2 = data_messages;
-                Bitmap res =   BitmapFactory.decodeResource(getResources(), R.drawable.walk,options)   ;
-
-                player2.setWalkup(Animation.getWalkAnimation(res,player.getWidth(),player.getHeight(),JoystickView.UP));
-                player2.setWalkdown(Animation.getWalkAnimation(res,player.getWidth(),player.getHeight(),JoystickView.DOWN));
-                player2.setWalkleft(Animation.getWalkAnimation(res,player.getWidth(),player.getHeight(),JoystickView.LEFT));
-                player2.setWalkright(Animation.getWalkAnimation(res,player.getWidth(),player.getHeight(),JoystickView.RIGHT));
-
-
-                player2.update();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-            }
-        });
 
         bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.grassbg1));
         showJoystick();
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inScaled = false;
-        player = new Player(BitmapFactory.decodeResource(getResources(), R.drawable.walk,options), 64, 64 , 100,100,3);
+        player = new Player();
+        player.setPlayerName("gal");
+        player2 = new Player();
 
-        DatabaseReference r = database.getReference("players").child("givon");
-        r.addValueEventListener(playerReader);
+        player.setAnimation(animator.getWalkAnimation(JoystickView.CENTER));
+        player2.setAnimation(animator.getWalkAnimation(JoystickView.CENTER));
+
+        DatabaseReference r = database.getReference("players");
+        r.addListenerForSingleValueEvent(playerReader);
+        r.addValueEventListener(playerUpdater);
 
         //we can safely start the game loop
         thread.setRunning(true);
@@ -151,17 +209,33 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
 
     public void update()
     {
+        if (playerCount > 0) {
+            if (player.getDirection() != player.getOld_direction()) {
+
+                player.setAnimation(animator.getWalkAnimation(player.getDirection()));
+                player.setOld_direction(player.getDirection());
+            }
+
             player.update();
 
-            bg.update(player.getDirection(),player.getSpeed()/2);
+            if (player2.getOld_direction() != player2.getDirection()) {
+
+                player2.setAnimation(animator.getWalkAnimation(player2.getDirection()));
+                player2.setOld_direction(player2.getDirection());
+            }
+
+            player2.update();
+
+            bg.update(player.getDirection(), player.getSpeed() / 2);
             if (player.getX() <= 40) {
                 player.setX(player.getX() + 200);
                 bg.setX(bg.getX() + 200);
             }
-            if (player.getX() >= WIDTH-30) {
+            if (player.getX() >= WIDTH - 30) {
                 player.setX(player.getX() - 200);
                 bg.setX(bg.getX() - 200);
             }
+        }
     }
     @Override
     public void draw(Canvas canvas)
