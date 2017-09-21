@@ -2,11 +2,9 @@ package com.chalandriani.collectminigame;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -32,8 +30,9 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
     private MainThread thread;
     private Background bg;
     private AnimationManager animator;
-    private Player player,player2;
+    private Player player;
     private int playerCount = 0;
+    private OnlinePlayer player2;
 
     FirebaseDatabase database ;
 
@@ -90,6 +89,7 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
 
             @Override
             public void onReleased() {
+
                 player.setMoving(false);
             }
         });
@@ -156,8 +156,8 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
                         player2.setMoving(currentPlayer.isMoving());
                         player2.setSpeed(currentPlayer.getSpeed());
 
+
                     } else {
-                        player.setPlayerName(currentPlayer.getPlayerName());
                         player.setX(currentPlayer.getX());
                         player.setY(currentPlayer.getY());
                         player.setDirection(currentPlayer.getDirection());
@@ -166,6 +166,8 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
                         player.setHeight(currentPlayer.getHeight());
                         player.setMoving(currentPlayer.isMoving());
                         player.setSpeed(currentPlayer.getSpeed());
+
+
                     }
                 }
             }
@@ -184,8 +186,8 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
         bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.grassbg1));
         showJoystick();
         player = new Player();
-        player.setPlayerName("gal");
-        player2 = new Player();
+        player.setPlayerName("ziviva");
+        player2 = new OnlinePlayer();
 
         player.setAnimation(animator.getWalkAnimation(JoystickView.CENTER));
         player2.setAnimation(animator.getWalkAnimation(JoystickView.CENTER));
@@ -210,20 +212,20 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
     public void update()
     {
         if (playerCount > 0) {
+
             if (player.getDirection() != player.getOld_direction()) {
 
                 player.setAnimation(animator.getWalkAnimation(player.getDirection()));
                 player.setOld_direction(player.getDirection());
             }
-
             player.update();
+
 
             if (player2.getOld_direction() != player2.getDirection()) {
 
                 player2.setAnimation(animator.getWalkAnimation(player2.getDirection()));
                 player2.setOld_direction(player2.getDirection());
             }
-
             player2.update();
 
             bg.update(player.getDirection(), player.getSpeed() / 2);

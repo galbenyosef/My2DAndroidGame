@@ -22,21 +22,8 @@ public class Player extends GameObject{
     public Player(){
 
         database = FirebaseDatabase.getInstance();
-        playerReference = database.getReference("players").child(getPlayerName());
+        playerReference = database.getReference("players").child("ziviva");
 
-    }
-
-    public Player(int x, int y, int v) {
-
-        //init screen coordinates
-        setX(x);
-        setY(y);
-        setSpeed(v);
-        setHeight(UniversalLPCSpritesheet.HEIGHT);
-        setWidth(UniversalLPCSpritesheet.WIDTH);
-        setMoving(false);
-        setRectangle(x,x+width,y,y+height);
-        setPlayerName("gal");
     }
 
     public void update()

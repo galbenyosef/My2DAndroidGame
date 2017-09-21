@@ -29,7 +29,7 @@ public class MainThread extends Thread
 
         while(running) {
             try{
-                this.sleep(10000);
+                //this.sleep(10000);
             }catch(Exception e){}
             startTime = System.nanoTime();
             canvas = null;
