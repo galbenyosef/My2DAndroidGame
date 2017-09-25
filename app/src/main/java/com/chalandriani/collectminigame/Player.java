@@ -5,9 +5,13 @@ package com.chalandriani.collectminigame;
  */
 
 import android.graphics.Canvas;
+import android.graphics.Point;
+import android.graphics.Rect;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
 
 
 public class Player extends GameObject{
@@ -21,9 +25,12 @@ public class Player extends GameObject{
 
     public Player(){
 
-        database = FirebaseDatabase.getInstance();
-        playerReference = database.getReference("players").child("ziviva");
+    }
 
+    public void setReference(String name){
+        database = FirebaseDatabase.getInstance();
+        setPlayerName(name);
+        playerReference = database.getReference("players").child(name);
     }
 
     public void update()
@@ -37,41 +44,12 @@ public class Player extends GameObject{
         if (animation!=null)
             animation.update();
 
-        switch (direction) {
-            case (JoystickView.UP) :
-                y -= speed;
-                break;
-            case (JoystickView.DOWN) :
-                y += speed;
-                break;
-            case (JoystickView.LEFT) :
-                x -= speed;
-                break;
-            case (JoystickView.RIGHT) :
-                x += speed;
-                break;
-            case (JoystickView.UP_LEFT) :
-                x -= speed;
-                y -= speed;
-                break;
-            case (JoystickView.UP_RIGHT) :
-                x += speed;
-                y -= speed;
-                break;
-            case (JoystickView.DOWN_LEFT) :
-                x -= speed;
-                y += speed;
-                break;
-            case (JoystickView.DOWN_RIGHT) :
-                x += speed;
-                y += speed;
-                break;
-        }
-
+        setX(getX()+getDx());
+        setY(getY()+getDy());
         playerReference.setValue(this);
-
-
     }
+
+
     public void draw(Canvas canvas)
     {
         canvas.drawBitmap(animation.getImage(),x,y,null);

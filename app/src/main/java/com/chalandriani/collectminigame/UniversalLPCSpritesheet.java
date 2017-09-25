@@ -17,11 +17,7 @@ public class UniversalLPCSpritesheet {
 
     public UniversalLPCSpritesheet(Resources resource){
 
-
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inScaled = false;
-
-        this.resource =   BitmapFactory.decodeResource(resource, R.drawable.walk,options)   ;
+        this.resource =   BitmapFactory.decodeResource(resource, R.drawable.walk)   ;
     }
 
     public Animation makeAnimation(int row,int frames,int delay){
