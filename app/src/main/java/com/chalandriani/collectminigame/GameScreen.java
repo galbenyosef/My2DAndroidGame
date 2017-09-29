@@ -6,9 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
@@ -18,8 +15,15 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.GridLayout;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
+
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,7 +31,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -36,13 +39,15 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
 {
     public static final int WIDTH = 2400  ;
     public static final int HEIGHT = 480;
-    private MainThread thread;
-    private Background bg;
-    private AnimationManager animator;
-    private Player player;
-    private int playerCount = 0;
-    private OnlinePlayer player2;
-    private Rect mapTopLimit,mapBottomLimit;
+    MainThread thread;
+    Background bg;
+    Player player;
+    int playerCount = 0;
+    OnlinePlayer player2;
+    Rect mapTopLimit,mapBottomLimit;
+    float scaleFactorX;
+    float scaleFactorY;
+
 
     FirebaseDatabase database ;
 
@@ -54,8 +59,7 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
     public GameScreen(Context context, AttributeSet attrs) {
         super (context, attrs);
 
-        animator = new AnimationManager(getResources());
-        database  = FirebaseDatabase.getInstance();
+
         //add the callback to the surfaceholder to intercept events
         getHolder().addCallback(this);
         thread = new MainThread(getHolder(), this);
@@ -92,11 +96,15 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceCreated(SurfaceHolder holder){
 
+        FirebaseApp.initializeApp(getContext());
+        database  = FirebaseDatabase.getInstance();
+
         bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.map));
-        showJoystick();
         mapTopLimit = new Rect(0,0,2400,8*24);
         mapBottomLimit = new Rect(0,18*24,2400,20*24);
 
+        scaleFactorX = (float)getWidth()/(WIDTH/3*1.f);
+        scaleFactorY = (float)getHeight()/(HEIGHT*1.f);
         player = new Player();
         player.setReference("gal");
         player2 = new OnlinePlayer();
@@ -114,34 +122,60 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
+
+
         if(event.getAction() == MotionEvent.ACTION_DOWN) {
         }
         return super.onTouchEvent(event);
     }
 
-    void setJoystickKeys(JoystickView joy){
-        joy.setOnJoystickMoveListener(new JoystickView.OnJoystickMoveListener() {
+    void showUI(){
+
+        final View rootView = ((Activity)getContext()).getWindow().getDecorView().findViewById(android.R.id.content);
+        final RelativeLayout buttonsView = (RelativeLayout)rootView.findViewById(R.id.buttonview_layout);
+        final RelativeLayout joystickView = (RelativeLayout)rootView.findViewById(R.id.joystickview_layout);
+
+        FrameLayout.LayoutParams resizeJoystick = new FrameLayout.LayoutParams(getWidth()/4,getHeight()/4,Gravity.BOTTOM | Gravity.START);
+        resizeJoystick.setMargins((int)(24*scaleFactorX),0,0,(int)(24*scaleFactorY));
+        joystickView.setLayoutParams(resizeJoystick);
+        JoystickView joyview = new JoystickView(getContext());
+        joyview.setOnJoystickMoveListener(new JoystickView.OnJoystickMoveListener() {
             @Override
             public void onValueChanged(int angle, int power, int direction) {
-                player.setMoving(true);
+                player.setWalking(true);
                 player.setDirection(direction);
             }
 
             @Override
             public void onReleased() {
 
-                player.setMoving(false);
+                player.setWalking(false);
             }
         });
-    }
+        joystickView.addView(joyview);
 
-    void showJoystick(){
+        FrameLayout.LayoutParams resizeButtons = new FrameLayout.LayoutParams(getWidth()/4,getHeight()/4,Gravity.BOTTOM | Gravity.END);
+        resizeButtons.setMargins(0,0,0,(int)(24*scaleFactorY));
+        ButtonsView bn = new ButtonsView(getContext(),getWidth()/16);
+        bn.setLayoutParams(resizeButtons);
+        bn.setOnButtonPressedListener(new ButtonsView.OnButtonPressedListener() {
+            @Override
+            public void onButtonClick(Button clcked) {
+                if (clcked.getTag() == "A"){
+                    player.setSlashing(true);
+                }
+                else if (clcked.getTag() == "B"){
 
-        JoystickView joyview = new JoystickView(getContext());
-        joyview.setLayoutParams(new FrameLayout.LayoutParams(getHeight()/5,getWidth()/5, Gravity.BOTTOM));
-        setJoystickKeys(joyview);
-        View rootView = ((Activity)getContext()).getWindow().getDecorView().findViewById(android.R.id.content);
-        ((FrameLayout)rootView).addView(joyview);
+                }
+                else if (clcked.getTag() == "C"){
+
+
+                }
+                else
+                    return;
+            }
+        });
+        buttonsView.addView(bn);
     }
 
     ValueEventListener playerUpdater = new ValueEventListener() {
@@ -158,12 +192,11 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
                         player2.setX(currentPlayer.getX());
                         player2.setY(currentPlayer.getY());
                         player2.setDirection(currentPlayer.getDirection());
-                        player2.setOld_direction(currentPlayer.getOld_direction());
                         player2.setWidth(currentPlayer.getWidth());
                         player2.setHeight(currentPlayer.getHeight());
-                        player2.setMoving(currentPlayer.isMoving());
+                        player2.setWalking(currentPlayer.isWalking());
+                        player2.setSlashing(currentPlayer.isSlashing());
                         player2.setSpeed(currentPlayer.getSpeed());
-
                     }
                 }
             }
@@ -189,26 +222,23 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
                         player2.setX(currentPlayer.getX());
                         player2.setY(currentPlayer.getY());
                         player2.setDirection(currentPlayer.getDirection());
-                        player2.setOld_direction(currentPlayer.getOld_direction());
                         player2.setWidth(currentPlayer.getWidth());
                         player2.setHeight(currentPlayer.getHeight());
-                        player2.setMoving(currentPlayer.isMoving());
+                        player2.setWalking(currentPlayer.isWalking());
+                        player2.setSlashing(currentPlayer.isSlashing());
                         player2.setSpeed(currentPlayer.getSpeed());
-                        player2.setAnimation(animator.getWalkAnimation(player2.getDirection()));
-
                     } else {
                         player.setX(currentPlayer.getX());
                         player.setY(currentPlayer.getY());
                         player.setDirection(currentPlayer.getDirection());
-                        player.setOld_direction(currentPlayer.getOld_direction());
                         player.setWidth(currentPlayer.getWidth());
                         player.setHeight(currentPlayer.getHeight());
-                        player.setMoving(currentPlayer.isMoving());
+                        player.setWalking(currentPlayer.isWalking());
+                        player.setSlashing(currentPlayer.isSlashing());
                         player.setSpeed(currentPlayer.getSpeed());
-                        player.setAnimation(animator.getWalkAnimation(player.getDirection()));
-
                     }
                 }
+                showUI();
             }
         }
 
@@ -248,18 +278,8 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
                 player.setDx(0);
                 player.setDy(0);
             }
-            if (player.getDirection() != player.getOld_direction()) {
 
-                player.setAnimation(animator.getWalkAnimation(player.getDirection()));
-                player.setOld_direction(player.getDirection());
-            }
             player.update();
-
-            if (player2.getOld_direction() != player2.getDirection()) {
-
-                player2.setAnimation(animator.getWalkAnimation(player2.getDirection()));
-                player2.setOld_direction(player2.getDirection());
-            }
             player2.update();
 
             bg.update(player.getDirection(), player.getSpeed() / 2);
@@ -278,8 +298,6 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
     {
         super.draw(canvas);
 
-        final float scaleFactorX = (float)getWidth()/(WIDTH/3*1.f);
-        final float scaleFactorY = (float)getHeight()/(HEIGHT*1.f);
         if(canvas!=null) {
             final int savedState = canvas.save();
             canvas.scale(scaleFactorX, scaleFactorY);
@@ -292,6 +310,7 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback
             canvas.drawOval(new RectF(player.getX() + player.getDx() + 15,player.getY() + player.getDy() + 50
                     ,player.getX() + player.getDx() + player.getWidth() - 15,player.getY() + player.getDy() + player.getHeight()),mPaint);
             canvas.drawOval(new RectF(player2.getX()+15,player2.getY()+50,player2.getX()+player2.getWidth()-15,player2.getY()+player2.getHeight()),mPaint);
+
 
             player.draw(canvas);
             player2.draw(canvas);

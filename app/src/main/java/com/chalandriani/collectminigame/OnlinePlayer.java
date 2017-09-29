@@ -1,14 +1,17 @@
 package com.chalandriani.collectminigame;
 
+import android.content.res.Resources;
+
 /**
  * Created by Gal on 18-Sep-17.
  */
 
 public class OnlinePlayer extends Player {
 
+
     @Override
     public void update() {
-        if (!isMoving()){
+        if (!isWalking()){
             return;
         }
 

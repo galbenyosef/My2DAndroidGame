@@ -10,6 +10,10 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+
+import static com.chalandriani.collectminigame.GameScreen.HEIGHT;
+import static com.chalandriani.collectminigame.GameScreen.WIDTH;
 
 public class JoystickView extends View {
 
@@ -17,7 +21,6 @@ public class JoystickView extends View {
     // Private Members
     // =========================================
     private final double RAD = 57.2957795;
-    private final String TAG = "JoystickView";
     private Paint mainCircle;
     private Paint secondaryCircle;
     private Paint button;
@@ -69,7 +72,7 @@ public class JoystickView extends View {
 
     private void initJoystickView() {
         mainCircle = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mainCircle.setColor(Color.WHITE);
+        mainCircle.setColor(Color.TRANSPARENT);
         mainCircle.setStyle(Paint.Style.FILL_AND_STROKE);
 
         secondaryCircle = new Paint();
@@ -78,22 +81,25 @@ public class JoystickView extends View {
 
         verticalLine = new Paint();
         verticalLine.setStrokeWidth(5);
-        verticalLine.setColor(Color.RED);
+        verticalLine.setColor(Color.BLACK);
+        verticalLine.setAlpha(40);
 
         horizontalLine = new Paint();
         horizontalLine.setStrokeWidth(2);
         horizontalLine.setColor(Color.BLACK);
+        horizontalLine.setAlpha(40);
 
         button = new Paint(Paint.ANTI_ALIAS_FLAG);
         button.setColor(Color.RED);
         button.setStyle(Paint.Style.FILL);
+        button.setAlpha(40);
     }
     @Override
     protected void onSizeChanged(int xNew, int yNew, int xOld, int yOld) {
         super.onSizeChanged(xNew, yNew, xOld, yOld);
         // before measure, get the center of view
-        xPosition =  getWidth() / 2;
-        yPosition =  getWidth() / 2;
+        xPosition =  getWidth()/2;
+        yPosition =  getHeight()/2;
         int d = Math.min(xNew, yNew);
         buttonRadius = (int) (d / 2 * 0.25);
         joystickRadius = (int) (d / 2 * 0.75);
@@ -128,8 +134,8 @@ public class JoystickView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        centerX = (getWidth()) / 2;
-        centerY = (getHeight()) / 2;
+        centerX = getWidth()/2;
+        centerY = getHeight()/2;
 
         // painting the main circle
         canvas.drawCircle((int) centerX, (int) centerY, joystickRadius,
@@ -148,6 +154,7 @@ public class JoystickView extends View {
 
         // painting the move button
         canvas.drawCircle(xPosition, yPosition, buttonRadius, button);
+
     }
 
     @Override
