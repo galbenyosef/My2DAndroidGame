@@ -61,6 +61,9 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
     public void setCharacterId(int characterId) {
         this.characterId = characterId;
     }
+    public int getCharacterId() {
+        return characterId;
+    }
     private void setAnimation(Animation animation) {
         this.animation=animation;
     }

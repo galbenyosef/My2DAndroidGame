@@ -43,7 +43,9 @@ public class FirebaseHandler {
                 if (dataSnapshot.getValue(player_db) != null) {
                     ArrayList<Player> players_online = new ArrayList<>(dataSnapshot.getValue(player_db).values());
                     if (players_online.size() == 0) return;
-                    Main.players.addAll(players_online);
+                    for (Player player : players_online)
+                        if (!player.getPlayerName().equalsIgnoreCase(Main.player.getPlayerName()))
+                            Main.players.add(player);
                 }
             }
             @Override
