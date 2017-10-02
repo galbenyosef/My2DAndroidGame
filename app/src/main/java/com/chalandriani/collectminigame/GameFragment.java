@@ -1,40 +1,105 @@
 package com.chalandriani.collectminigame;
 
-
 import android.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
+import android.support.annotation.Nullable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class GameFragment extends Fragment {
 
-
-    Player self;
-
     public GameFragment() {
         // Required empty public constructor
     }
 
+
+    public GameFragment initialize(String name,int id){
+        Main.player = new Player();
+        Main.player.setPlayerName(name);
+        Main.player.setCharacterId(id);
+        FirebaseHandler.player_reference = FirebaseHandler.players_reference.child(name);
+        FirebaseHandler.players_reference.addListenerForSingleValueEvent(FirebaseHandler.EventListeners.playerReader);
+        FirebaseHandler.players_reference.addValueEventListener(FirebaseHandler.EventListeners.playerUpdater);
+        return this;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_game, container, false);
-        GameView gv = v.findViewById(R.id.gameview_layout);
-        gv.setPlayer(self);
         return v;
     }
 
-    public void setSelf(Player self) {
-        this.self = self;
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        final View v = view;
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                showUI(v);
+            }
+        });
+    }
+
+    void showUI(View view){
+
+        final RelativeLayout buttonsView = view.findViewById(R.id.buttonview_layout);
+
+        final RelativeLayout joystickView = view.findViewById(R.id.joystickview_layout);
+        final int width = view.getWidth();
+        final int height =  view.getHeight();
+
+        FrameLayout.LayoutParams resizeJoystick = new FrameLayout.LayoutParams(width/4,height/4, Gravity.BOTTOM | Gravity.START);
+        resizeJoystick.setMargins((int)(24*GameView.scaleFactorX),0,0,(int)(24*GameView.scaleFactorY));
+        joystickView.setLayoutParams(resizeJoystick);
+        JoystickView joyview = new JoystickView(getActivity());
+        joyview.setOnJoystickMoveListener(new JoystickView.OnJoystickMoveListener() {
+            @Override
+            public void onValueChanged(int angle, int power, int direction) {
+                Main.player.setWalking(true);
+                Main.player.setDirection(direction);
+            }
+
+            @Override
+            public void onReleased() {
+
+                Main.player.setWalking(false);
+            }
+        });
+        joystickView.addView(joyview);
+
+        FrameLayout.LayoutParams resizeButtons = new FrameLayout.LayoutParams(width/4,height/4,Gravity.BOTTOM | Gravity.END);
+        resizeButtons.setMargins(0,0,0,(int)(24*GameView.scaleFactorX));
+        ButtonsView bn = new ButtonsView(getActivity(),width/16);
+        bn.setLayoutParams(resizeButtons);
+        bn.setOnButtonPressedListener(new ButtonsView.OnButtonPressedListener() {
+            @Override
+            public void onButtonClick(Button clcked) {
+                if (clcked.getTag() == "A"){
+                    Main.player.setSlashing(true);
+                }
+                else if (clcked.getTag() == "B"){
+
+                }
+                else if (clcked.getTag() == "C"){
+
+                }
+                else
+                    return;
+            }
+        });
+        buttonsView.addView(bn);
     }
 
 }

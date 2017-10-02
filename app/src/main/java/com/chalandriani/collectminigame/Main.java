@@ -2,7 +2,6 @@ package com.chalandriani.collectminigame;
 
 import android.app.Activity;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Window;
@@ -33,16 +32,13 @@ public class Main extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.fragment_main);
 
-        FirebaseHandler.setup(getApplicationContext());
+        FirebaseHandler.initialize(getApplicationContext());
         resources = getResources();
         animator = new AnimationManager(getAssets());
         fragmentizer = getFragmentManager();
+        players = new ArrayList<>();
 
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, new LoginFragment() );
-        fragmentTransaction.commit();
-
+        FragmentHandler.switchFragment(R.id.fragment_container, new LoginFragment());
     }
 
     @Override

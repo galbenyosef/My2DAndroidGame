@@ -16,7 +16,6 @@ import android.widget.Toast;
  */
 public class CharacterFragment extends Fragment {
 
-
     CharacterView viewer;
     Button left,right,ok;
     TextView characterNumber;
@@ -27,7 +26,6 @@ public class CharacterFragment extends Fragment {
     public CharacterFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,7 +45,6 @@ public class CharacterFragment extends Fragment {
         right=view.findViewById(R.id.arrow_right);
         ok=view.findViewById(R.id.button_ok);
         username=view.findViewById(R.id.username);
-
         characterNumber=view.findViewById(R.id.characternum);
 
         clickListener = new View.OnClickListener() {
@@ -63,27 +60,18 @@ public class CharacterFragment extends Fragment {
                 }
                 else{
                     String name = username.getText().toString();
+                    int id = viewer.getCharacterId();
                     if (name.length() < 3 || !isLegal(name)) {
                         Toast.makeText(getActivity(), "Bad username syntax", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    GameFragment gf = new GameFragment();
-                    Player self = new Player();
-                    self.setPlayerName(name);
-                    self.setCharacterId(viewer.getCharacterId());
-                    FirebaseHandler.player_reference = FirebaseHandler.database.getReference("players").child(name);
-                    gf.setSelf(self);
-                    FragmentHandler.switchFragment(R.id.fragment_container,gf);
-
+                    FragmentHandler.switchFragment(R.id.fragment_container,new GameFragment().initialize(name,id));
                 }
-
             }
         };
-
         left.setOnClickListener(clickListener);
         right.setOnClickListener(clickListener);
         ok.setOnClickListener(clickListener);
-
     }
 
     public static boolean isLegal(String name) {
