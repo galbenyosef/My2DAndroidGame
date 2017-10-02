@@ -1,8 +1,8 @@
 package com.chalandriani.collectminigame;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+
+import java.util.ArrayList;
 
 /**
  * Created by Gal on 17-Sep-17.
@@ -13,12 +13,25 @@ public class UniversalLPCSpritesheet {
     public final static int WIDTH = 64;
     public final static int HEIGHT = 64;
     private Bitmap resource;
-    private Bitmap punch;
 
+    ArrayList<Animation> walk;
+    ArrayList<Animation> slash;
 
-    public UniversalLPCSpritesheet(Resources resource){
+    public UniversalLPCSpritesheet(Bitmap character){
 
-        this.resource =   BitmapFactory.decodeResource(resource, R.drawable.character_5)   ;
+        this.resource = character;
+
+        walk = new ArrayList<>();
+        walk.add(getWalkAnimation(JoystickView.UP));
+        walk.add(getWalkAnimation(JoystickView.DOWN));
+        walk.add(getWalkAnimation(JoystickView.LEFT));
+        walk.add(getWalkAnimation(JoystickView.RIGHT));
+
+        slash = new ArrayList<>();
+        slash.add(getSlashAnimation(JoystickView.UP));
+        slash.add(getSlashAnimation(JoystickView.DOWN));
+        slash.add(getSlashAnimation(JoystickView.LEFT));
+        slash.add(getSlashAnimation(JoystickView.RIGHT));
     }
 
     public Animation makeAnimation(int row,int frames,int delay){
@@ -83,5 +96,8 @@ public class UniversalLPCSpritesheet {
 
     }
 
+    public Bitmap getResource() {
+        return resource;
+    }
 }
 

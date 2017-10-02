@@ -53,9 +53,9 @@ public class Background {
         canvas.drawBitmap(image, x, y,null);
         int tempx = 0;
         if(x>0)
-            tempx = x - GameScreen.WIDTH;
+            tempx = x - GameView.WIDTH;
         if(x<0)
-            tempx = x + GameScreen.WIDTH;
+            tempx = x + GameView.WIDTH;
         canvas.drawBitmap(image, tempx , y,  null);
     }
 

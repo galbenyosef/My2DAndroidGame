@@ -14,44 +14,29 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
 
     //Character attributes
     //Animation
-    Animation animation;
-    private String playerName;
+    protected AnimationManager animator = Main.animator;
+    protected Animation animation;
+    protected int characterId;
+    protected String playerName;
     //IMoveable variables
-    private int dx;
-    private int dy;
-    int direction;
-    int speed;
+    protected int dx;
+    protected int dy;
+    protected int direction;
+    protected int speed;
     //IDestroyable variables
-    private int hp;
-    private int hpMax;
-    //Server variables
-    FirebaseDatabase database;
-    DatabaseReference playerReference;
+    protected int hp;
+    protected int hpMax;
     //Character states
-    private boolean walking;
-    private boolean slashing;
-    //Animation collection
-    private AnimationManager animator;
+    protected boolean walking;
+    protected boolean slashing;
 
     //Character states times
-    private long slashingStartTime;
+    protected long slashingStartTime;
 
     //Empty c'tor is needed for firebase database
     Player(){
-        animator = new AnimationManager(Game.resources);
-        animator.setAnimationListener(new AnimationManager.OnAnimationListener() {
-            @Override
-            public void onAnimationChange(Animation anim) {
-                setAnimation(anim);
-            }
-        });
     }
-    //Character
-    public void setReference(String name){
-        setPlayerName(name);
-        database = FirebaseDatabase.getInstance();
-        playerReference = database.getReference("players").child(name);
-    }
+
     void setPlayerName(String playerName) {
         this.playerName = playerName;
     }
@@ -60,18 +45,21 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
     }
     void setWalking(boolean walking){
         if (!isSlashing()) {
-            animator.changeAnimation(animator.getWalkAnimation(getDirection()));
-            this.walking = walking;
+            setAnimation(animator.getCharacter(characterId).getWalkAnimation(getDirection()));
         }
+        this.walking = walking;
+
     }
     void setSlashing(boolean slashing){
-        if (slashing) {
+        if (!this.slashing) {
             slashingStartTime = System.nanoTime();
-            animator.changeAnimation(animator.getSlashAnimation(getDirection()));
+            setAnimation(animator.getCharacter(characterId).getSlashAnimation(getDirection()));
         }
-        else
-            animator.changeAnimation(animator.getWalkAnimation(getDirection()));
         this.slashing=slashing;
+    }
+
+    public void setCharacterId(int characterId) {
+        this.characterId = characterId;
     }
     private void setAnimation(Animation animation) {
         this.animation=animation;
@@ -163,7 +151,7 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
         if (isWalking() || isSlashing()) {
             animation.update();
 
-            if (isWalking() && !isSlashing()) {
+            if (isWalking()) {
                 setX(getX() + getDx());
                 setY(getY() + getDy());
             }
@@ -173,7 +161,6 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
                 }
             }
         }
-        playerReference.setValue(this);
     }
     public void draw(Canvas canvas)
     {

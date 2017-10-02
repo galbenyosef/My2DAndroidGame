@@ -7,13 +7,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-
-import static com.chalandriani.collectminigame.GameScreen.HEIGHT;
-import static com.chalandriani.collectminigame.GameScreen.WIDTH;
 
 public class JoystickView extends View {
 

@@ -13,7 +13,6 @@ public class Animation {
     private int currentFrame;
     private long startTime;
     private long delay;
-    private boolean playedOnce;
 
     public Animation(Bitmap[] frames, long d){
 
@@ -37,12 +36,10 @@ public class Animation {
         }
         if(currentFrame == frames.length){
             currentFrame = 0;
-            playedOnce = true;
         }
     }
     public Bitmap getImage(){
         return frames[currentFrame];
     }
-    public int getFrame(){return currentFrame;}
-    public boolean playedOnce(){return playedOnce;}
+
 }

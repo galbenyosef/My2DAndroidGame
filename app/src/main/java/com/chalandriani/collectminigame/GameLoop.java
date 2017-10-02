@@ -4,19 +4,19 @@ import android.graphics.Canvas;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
-public class MainThread extends Thread
+public class GameLoop extends Thread
 {
     private int FPS = 10;
     private SurfaceHolder surfaceHolder;
-    private GameScreen gameScreen;
+    private GameView gameView;
     private boolean running;
     public static Canvas canvas;
 
-    public MainThread(SurfaceHolder surfaceHolder, GameScreen gameScreen)
+    public GameLoop(SurfaceHolder surfaceHolder, GameView gameView)
     {
         super();
         this.surfaceHolder = surfaceHolder;
-        this.gameScreen = gameScreen;
+        this.gameView = gameView;
     }
     @Override
     public void run()
@@ -24,22 +24,18 @@ public class MainThread extends Thread
         long startTime;
         long timeMillis;
         long waitTime;
-        int frameCount =0;
         long targetTime = 1000/FPS;
 
         while(running) {
-            try{
-                //this.sleep(10000);
-            }catch(Exception e){}
+
             startTime = System.nanoTime();
             canvas = null;
 
-            //try locking the canvas for pixel editing
             try {
                 canvas = this.surfaceHolder.lockCanvas();
                 synchronized (surfaceHolder) {
-                    this.gameScreen.update();
-                    this.gameScreen.draw(canvas);
+                    this.gameView.update();
+                    this.gameView.draw(canvas);
                 }
             } catch (Exception e) {
                 Log.d("EX",e.getMessage());
@@ -60,12 +56,6 @@ public class MainThread extends Thread
             try{
                 this.sleep(waitTime);
             }catch(Exception e){}
-
-            frameCount++;
-            if(frameCount == FPS)
-            {
-                frameCount=0;
-            }
         }
     }
     public void setRunning(boolean b)
