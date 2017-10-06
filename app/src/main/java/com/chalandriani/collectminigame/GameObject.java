@@ -9,8 +9,8 @@ public abstract class GameObject {
     protected int x;
     protected int y;
 
-    protected int width;
-    protected int height;
+   // protected int width;
+  //  protected int height;
 
     public void setX(int x) {
         this.x = x;
@@ -18,13 +18,13 @@ public abstract class GameObject {
     public void setY(int y) {
         this.y = y;
     }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-    public void setHeight(int height) {
-        this.height = height;
-    }
+//
+//    public void setWidth(int width) {
+//        this.width = width;
+//    }
+//    public void setHeight(int height) {
+//        this.height = height;
+//    }
 
 
     public int getX() {
@@ -33,13 +33,13 @@ public abstract class GameObject {
     public int getY() {
         return y;
     }
-
-    public int getWidth() {
-        return width;
-    }
-    public int getHeight() {
-        return height;
-    }
+//
+//    public int getWidth() {
+//        return width;
+//    }
+//    public int getHeight() {
+//        return height;
+//    }
 
 
 }

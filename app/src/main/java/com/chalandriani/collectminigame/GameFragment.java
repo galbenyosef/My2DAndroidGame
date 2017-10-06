@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,12 +24,14 @@ public class GameFragment extends Fragment {
 
 
     public GameFragment initialize(String name,int id){
+
         Main.player = new Player();
         Main.player.setPlayerName(name);
         Main.player.setCharacterId(id);
-        FirebaseHandler.player_reference = FirebaseHandler.players_reference.child(name);
-        FirebaseHandler.players_reference.addListenerForSingleValueEvent(FirebaseHandler.EventListeners.playerReader);
-        FirebaseHandler.players_reference.addValueEventListener(FirebaseHandler.EventListeners.playerUpdater);
+        Main.player.setSpeed(3);
+        Main.player.setX(250);
+        Main.player.setY(300);
+        Main.player.setDirection(JoystickView.CENTER);
         return this;
     }
 
@@ -50,6 +53,8 @@ public class GameFragment extends Fragment {
                 showUI(v);
             }
         });
+        FirebaseHandler.player_reference = FirebaseHandler.players_reference.child(Main.player.getPlayerName());
+        FirebaseHandler.players_reference.addChildEventListener(FirebaseHandler.EventListeners.playerUpdaterv2);
     }
 
     void showUI(View view){
@@ -67,14 +72,17 @@ public class GameFragment extends Fragment {
         joyview.setOnJoystickMoveListener(new JoystickView.OnJoystickMoveListener() {
             @Override
             public void onValueChanged(int angle, int power, int direction) {
-                Main.player.setWalking(true);
+
                 Main.player.setDirection(direction);
+                Main.player.setWalking(true);
+
             }
 
             @Override
             public void onReleased() {
 
                 Main.player.setWalking(false);
+
             }
         });
         joystickView.addView(joyview);
@@ -86,8 +94,12 @@ public class GameFragment extends Fragment {
         bn.setOnButtonPressedListener(new ButtonsView.OnButtonPressedListener() {
             @Override
             public void onButtonClick(Button clcked) {
-                if (clcked.getTag() == "A"){
+                if (clcked.getTag() == "A") {
+
                     Main.player.setSlashing(true);
+                    Log.d("H",Main.player.toString() + " slash");
+
+
                 }
                 else if (clcked.getTag() == "B"){
 

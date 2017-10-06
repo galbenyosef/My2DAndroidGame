@@ -7,8 +7,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
+import static android.content.ContentValues.TAG;
 
 public class JoystickView extends View {
 
@@ -32,13 +35,13 @@ public class JoystickView extends View {
 
 
     public final static int UP = 8;
-    public final static int UP_RIGHT = 9;
-    public final static int RIGHT = 6;
-    public final static int DOWN_RIGHT = 3;
-    public final static int DOWN = 2;
-    public final static int DOWN_LEFT = 1;
-    public final static int LEFT = 4;
-    public final static int UP_LEFT = 7;
+    public final static int UP_RIGHT = 1;
+    public final static int RIGHT = 11;
+    public final static int DOWN_RIGHT = 2;
+    public final static int DOWN = 10;
+    public final static int DOWN_LEFT = 3;
+    public final static int LEFT = 9;
+    public final static int UP_LEFT = 4;
     public final static int CENTER = 5;
 
     // =========================================
@@ -165,7 +168,7 @@ public class JoystickView extends View {
                 yPosition = (int) ((yPosition - centerY) * joystickRadius / abs + centerY);
             }
 
-            //Log.d(TAG, "Angle:" + getAngle() + "Power:" + getPower());
+            //Log.d("H", "Angle:" + getAngle() + "Power:" + getPower() + "Direction:" +getDirection());
 
             // Pressure
             if (listener != null) {

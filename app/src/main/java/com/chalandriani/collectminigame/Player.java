@@ -5,17 +5,16 @@ package com.chalandriani.collectminigame;
  */
 
 import android.graphics.Canvas;
-
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import android.os.Handler;
+import android.provider.Settings;
+import android.util.Log;
 
 
 public class Player extends GameObject implements IMoveable,IDestroyable {
-
     //Character attributes
     //Animation
-    protected AnimationManager animator = Main.animator;
-    protected Animation animation;
+    private AnimationManager animator = Main.animator;
+    private Animation animation;
     protected int characterId;
     protected String playerName;
     //IMoveable variables
@@ -29,11 +28,13 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
     //Character states
     protected boolean walking;
     protected boolean slashing;
+    protected boolean changedDirection;
 
     //Character states times
-    protected long slashingStartTime;
+    private long slashingStartTime;
+    private long risingStartTime;
 
-    //Empty c'tor is needed for firebase database
+    //Empty params c'tor is needed for firebase database
     Player(){
     }
 
@@ -43,23 +44,13 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
     public String getPlayerName() {
         return playerName;
     }
-    void setWalking(boolean walking){
-        if (!isSlashing()) {
-            setAnimation(animator.getCharacter(characterId).getWalkAnimation(getDirection()));
-        }
-        this.walking = walking;
 
-    }
-    void setSlashing(boolean slashing){
-        if (!this.slashing) {
-            slashingStartTime = System.nanoTime();
-            setAnimation(animator.getCharacter(characterId).getSlashAnimation(getDirection()));
-        }
-        this.slashing=slashing;
-    }
+
 
     public void setCharacterId(int characterId) {
         this.characterId = characterId;
+        setAnimation(animator.getCharacter(characterId).getRisingAnimation());
+
     }
     public int getCharacterId() {
         return characterId;
@@ -71,6 +62,33 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
         return walking;
     }
     public boolean isSlashing() { return slashing; }
+    public void setWalking(boolean walking){
+        if (!isSlashing() && isChangedDirection()) {
+
+            setAnimation(animator.getCharacter(characterId).getWalkAnimation(getDirection()));
+            Log.d("H",""+animation.getImage().getByteCount());
+
+        }
+        setChangedDirection(false);
+        this.walking = walking;
+
+    }
+    public void setSlashing(boolean slashing){
+        if (!this.slashing && slashing) {
+            slashingStartTime = System.nanoTime();
+            setAnimation(animator.getCharacter(characterId).getSlashAnimation(getDirection()));
+        }
+        else if(!slashing) {
+            setAnimation(animator.getCharacter(characterId).getWalkAnimation(getDirection()));
+        }
+        this.slashing=slashing;
+    }
+    public boolean isChangedDirection() {
+        return changedDirection;
+    }
+    public void setChangedDirection(boolean changedDirection) {
+        this.changedDirection = changedDirection;
+    }
     //IMoveable
     public void setDx(int dx) {
         this.dx=dx;
@@ -84,11 +102,10 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
     public int getDy() {
         return dy;
     }
-    public void setDirection(int newdirection) {
-        this.direction = newdirection;
+    public void setDirection(int newDirection) {
         dx=dy=0;
 
-        switch (direction) {
+        switch (newDirection) {
             case (JoystickView.UP) :
                 dy -= speed;
                 break;
@@ -118,6 +135,23 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
                 dy += speed;
                 break;
         }
+
+        setChangedDirection(true);
+
+        if (this.direction == JoystickView.UP && newDirection == JoystickView.UP )
+            setChangedDirection(false);
+        if (this.direction == JoystickView.DOWN && newDirection == JoystickView.DOWN )
+            setChangedDirection(false);
+        if ((this.direction == JoystickView.RIGHT || this.direction == JoystickView.UP_RIGHT || this.direction == JoystickView.DOWN_RIGHT)
+                && (newDirection == JoystickView.RIGHT || newDirection == JoystickView.UP_RIGHT || newDirection == JoystickView.DOWN_RIGHT) )
+            setChangedDirection(false);
+        if ((this.direction == JoystickView.LEFT || this.direction == JoystickView.UP_LEFT || this.direction == JoystickView.DOWN_LEFT)
+                && (newDirection == JoystickView.LEFT || newDirection == JoystickView.UP_LEFT || newDirection == JoystickView.DOWN_LEFT) )
+            setChangedDirection(false);
+
+        if (isChangedDirection())
+
+        this.direction = newDirection;
 
     }
     public void setSpeed(int speed) {
@@ -152,22 +186,27 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
     //Core
     public void update() {
         if (isWalking() || isSlashing()) {
-            animation.update();
+            if (animation!=null)
+                animation.update();
 
-            if (isWalking()) {
+            if (isWalking() && !isSlashing()) {
                 setX(getX() + getDx());
                 setY(getY() + getDy());
             }
             if (isSlashing()) {
                 if ((System.nanoTime()-slashingStartTime)/1000000 > 1000) {
+                    slashingStartTime=0;
+                    //candidated to be replaced by slashing its own finish time boolean value
                     setSlashing(false);
+                    Log.d("H","FLASE SLASHING");
                 }
             }
         }
     }
     public void draw(Canvas canvas)
     {
-        canvas.drawBitmap(animation.getImage(),x,y,null);
+        if (animation!=null)
+            canvas.drawBitmap(animation.getImage(),x,y,null);
     }
 
 }

@@ -1,6 +1,8 @@
 package com.chalandriani.collectminigame;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 
 public class UniversalLPCSpritesheet {
 
+    public static int testi = 0;
     public final static int WIDTH = 64;
     public final static int HEIGHT = 64;
     private Bitmap resource;
@@ -41,6 +44,8 @@ public class UniversalLPCSpritesheet {
         for (int i = 0; i < images.length; i++)
         {
             images[i] =  Bitmap.createBitmap(resource, i*WIDTH , row*HEIGHT, WIDTH, HEIGHT);
+            ++testi;
+            Log.d("H",""+testi+" "+images[i].getByteCount());
         }
 
         return new Animation(images,delay);

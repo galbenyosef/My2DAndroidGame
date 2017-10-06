@@ -3,34 +3,32 @@ package com.chalandriani.collectminigame;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ColorSpace;
+import android.graphics.Rect;
+import android.util.Log;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 public class AnimationManager {
 
-    ArrayList<UniversalLPCSpritesheet> sprites;
+    ArrayList<UniversalLPCSpritesheetConcrete> sprites;
     AssetManager assetMgr;
 
-    public AnimationManager (AssetManager assetManager){
+    public AnimationManager (AssetManager assetManager) {
 
         sprites = new ArrayList<>();
         assetMgr = assetManager;
+    }
 
+    public UniversalLPCSpritesheetConcrete getCharacter(int id) {
         try {
-            for (int i = 0; i < 50; i++) {
-                Bitmap character = BitmapFactory.decodeStream(assetManager.open("characters/character_"+i+".png"));
-                sprites.add(new UniversalLPCSpritesheet(character));
-            }
+            UniversalLPCSpritesheetConcrete retval =  new UniversalLPCSpritesheetConcrete(BitmapFactory.decodeStream(assetMgr.open("characters/character_"+id+".png")));
+            return retval;
         } catch (IOException e) {
-            e.getMessage();
-            return;
+            Log.d("H",e.getMessage());
+            return null;
         }
-
     }
-
-    public UniversalLPCSpritesheet getCharacter(int id){
-        return sprites.get(id);
-    }
-
 }

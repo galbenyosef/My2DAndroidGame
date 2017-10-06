@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -69,11 +70,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 
         scaleFactorX = (float)getWidth()/(WIDTH/3*1.f);
         scaleFactorY = (float)getHeight()/(HEIGHT*1.f);
-        Main.player.setSpeed(3);
-        Main.player.setHeight(64);
-        Main.player.setWidth(64);
-        Main.player.setX(250);
-        Main.player.setY(300);
 
         //we can safely start the game loop
         Main.gameLoop.setRunning(true);
@@ -91,7 +87,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
     public boolean collision(){
 
         RectF playerOval = new RectF(Main.player.getX() + Main.player.getDx() + 25,Main.player.getY() + Main.player.getDy() + 55
-                ,Main.player.getX() + Main.player.getDx() + Main.player.getWidth() - 25,Main.player.getY() + Main.player.getDy() + Main.player.getHeight());
+                ,Main.player.getX() + Main.player.getDx() + 64 - 25,Main.player.getY() + Main.player.getDy() + 64);
      //   RectF player2Oval = new RectF(player2.getX()+25,player2.getY()+55,player2.getX()+player2.getWidth()-25,player2.getY()+player2.getHeight());
         if (playerOval.intersects(mapTopLimit.left,mapTopLimit.top,mapTopLimit.right,mapTopLimit.bottom)
                 || playerOval.intersects(mapBottomLimit.left,mapBottomLimit.top,mapBottomLimit.right,mapBottomLimit.bottom)) {
@@ -119,8 +115,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
         Main.player.update();
         FirebaseHandler.player_reference.setValue(Main.player);
 
-        for(Player player : Main.players)
+        for(Player player : Main.players) {
             player.update();
+        }
 
         bg.update(Main.player.getDirection(), Main.player.getSpeed() / 2);
         if (Main.player.getX() <= 40) {
@@ -147,14 +144,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
             mPaint.setColor(Color.BLACK);
             mPaint.setAlpha(40);
             canvas.drawOval(new RectF(Main.player.getX() + Main.player.getDx() + 15,Main.player.getY() + Main.player.getDy() + 50
-                    ,Main.player.getX() + Main.player.getDx() + Main.player.getWidth() - 15,Main.player.getY() + Main.player.getDy() + Main.player.getHeight()),mPaint);
+                    ,Main.player.getX() + Main.player.getDx() + 64 - 15,Main.player.getY() + Main.player.getDy() + 64),mPaint);
             //canvas.drawOval(new RectF(player2.getX()+15,player2.getY()+50,player2.getX()+player2.getWidth()-15,player2.getY()+player2.getHeight()),mPaint);
 
 
             Main.player.draw(canvas);
-            for (Player player : Main.players)
-                player.draw(canvas);
-          //  player2.draw(canvas);
+            if (!Main.players.isEmpty()) {
+                for (Player player : Main.players) {
+                    player.draw(canvas);
+                }
+            }
             canvas.restoreToCount(savedState);
         }
     }

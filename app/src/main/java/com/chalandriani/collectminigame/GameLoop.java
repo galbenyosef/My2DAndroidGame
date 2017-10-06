@@ -6,7 +6,7 @@ import android.view.SurfaceHolder;
 
 public class GameLoop extends Thread
 {
-    private int FPS = 10;
+    private int FPS = 4;
     private SurfaceHolder surfaceHolder;
     private GameView gameView;
     private boolean running;
@@ -61,5 +61,9 @@ public class GameLoop extends Thread
     public void setRunning(boolean b)
     {
         running=b;
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 }
