@@ -32,6 +32,7 @@ public class GameFragment extends Fragment {
         Main.player.setX(250);
         Main.player.setY(300);
         Main.player.setDirection(JoystickView.CENTER);
+        Main.player.setRectangle(null);
         return this;
     }
 
@@ -97,14 +98,14 @@ public class GameFragment extends Fragment {
                 if (clcked.getTag() == "A") {
 
                     Main.player.setSlashing(true);
-                    Log.d("H",Main.player.toString() + " slash");
-
 
                 }
                 else if (clcked.getTag() == "B"){
 
+
                 }
                 else if (clcked.getTag() == "C"){
+                    Main.player.setJumping(true);
 
                 }
                 else

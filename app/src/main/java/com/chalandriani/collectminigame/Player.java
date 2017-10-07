@@ -5,6 +5,10 @@ package com.chalandriani.collectminigame;
  */
 
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
@@ -28,25 +32,28 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
     //Character states
     protected boolean walking;
     protected boolean slashing;
+    protected boolean jumping;
+
+    //Used for Image loading optimization heuristics
     protected boolean changedDirection;
 
     //Character states times
     private long slashingStartTime;
     private long risingStartTime;
+    private int jumpingLevel;
+    private Rect rectangle;
 
     //Empty params c'tor is needed for firebase database
     Player(){
     }
 
+    //Player basic information
     void setPlayerName(String playerName) {
         this.playerName = playerName;
     }
     public String getPlayerName() {
         return playerName;
     }
-
-
-
     public void setCharacterId(int characterId) {
         this.characterId = characterId;
         setAnimation(animator.getCharacter(characterId).getRisingAnimation());
@@ -55,49 +62,108 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
     public int getCharacterId() {
         return characterId;
     }
+    //Animation handling
     private void setAnimation(Animation animation) {
         this.animation=animation;
+    }
+
+    public void setRectangle(Rect rectangle) {
+        this.rectangle = new Rect(getX()+25,getY()+55,getX()+64-25,getY()+64);
+    }
+    public void setRectangle() {
+        this.rectangle = new Rect(getX()+25,getY()+55,getX()+64-25,getY()+64);
+    }
+
+    public Rect getRectangle() {
+        return rectangle;
+    }
+
+    public void setWalking(boolean walking){
+
+        if (!isSlashing() && !isJumping() && isChangedDirection() && walking) {
+
+            setAnimation(animator.getCharacter(characterId).getWalkAnimation(getDirection()));
+
+        }
+        else if (this.walking && !walking){
+
+            setAnimation(animator.getCharacter(characterId).getWalkAnimation(getDirection()));
+
+        }
+
+        setChangedDirection(false);
+        this.walking = walking;
     }
     public boolean isWalking() {
         return walking;
     }
-    public boolean isSlashing() { return slashing; }
-    public void setWalking(boolean walking){
-        if (!isSlashing() && isChangedDirection()) {
-
-            setAnimation(animator.getCharacter(characterId).getWalkAnimation(getDirection()));
-            Log.d("H",""+animation.getImage().getByteCount());
-
-        }
-        setChangedDirection(false);
-        this.walking = walking;
-
-    }
     public void setSlashing(boolean slashing){
+
         if (!this.slashing && slashing) {
+
             slashingStartTime = System.nanoTime();
             setAnimation(animator.getCharacter(characterId).getSlashAnimation(getDirection()));
+
         }
-        else if(!slashing) {
+        else if(this.slashing && !slashing) {
+
             setAnimation(animator.getCharacter(characterId).getWalkAnimation(getDirection()));
+
         }
+
         this.slashing=slashing;
     }
-    public boolean isChangedDirection() {
-        return changedDirection;
+    public boolean isSlashing() { return slashing; }
+    public void setJumping(boolean jumping) {
+
+        if (!isJumping() && !isSlashing() && jumping){
+
+            jumpingLevel=0;
+
+        }
+        else if (isJumping() && !jumping){
+            setChangedDirection(true);
+            this.jumping=false;
+            setWalking(false);
+            Log.d("H", "stopped jumping " + jumpingLevel);
+
+        }
+        else if  (isJumping() && jumping) {
+            if (jumpingLevel >= Main.gameLoop.FPS){
+                setJumping(false);
+                jumpingLevel=0;
+                return;
+            }
+            int direction = getDirection();
+            setDirection(direction);
+            if (jumpingLevel < (Main.gameLoop.FPS / 2)) {
+                setY(getY() - getSpeed());
+                Log.d("H",""+jumpingLevel+" "+getY());
+            } else {
+                setY(getY() + getSpeed());
+                Log.d("H",""+jumpingLevel+" "+getY());
+            }
+        }
+        this.jumping = jumping;
+    }
+    public boolean isJumping() {
+        return jumping;
     }
     public void setChangedDirection(boolean changedDirection) {
         this.changedDirection = changedDirection;
+    }
+    public boolean isChangedDirection() {
+        return changedDirection;
     }
     //IMoveable
     public void setDx(int dx) {
         this.dx=dx;
     }
-    public void setDy(int dy) {
-        this.dy=dy;
-    }
     public int getDx() {
         return dx;
+    }
+    public void setDy(int dy) {
+        this.dy=dy;
     }
     public int getDy() {
         return dy;
@@ -149,16 +215,14 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
                 && (newDirection == JoystickView.LEFT || newDirection == JoystickView.UP_LEFT || newDirection == JoystickView.DOWN_LEFT) )
             setChangedDirection(false);
 
-        if (isChangedDirection())
-
         this.direction = newDirection;
 
     }
-    public void setSpeed(int speed) {
-        this.speed=speed;
-    }
     public int getDirection() {
         return direction;
+    }
+    public void setSpeed(int speed) {
+        this.speed=speed;
     }
     public int getSpeed() {
         return speed;
@@ -185,7 +249,7 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
     }
     //Core
     public void update() {
-        if (isWalking() || isSlashing()) {
+        if (isWalking() || isSlashing() || isJumping()) {
             if (animation!=null)
                 animation.update();
 
@@ -193,20 +257,53 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
                 setX(getX() + getDx());
                 setY(getY() + getDy());
             }
+
+            if (isJumping()) {
+                setJumping(isJumping());
+                jumpingLevel++;
+            }
+
             if (isSlashing()) {
                 if ((System.nanoTime()-slashingStartTime)/1000000 > 1000) {
                     slashingStartTime=0;
                     //candidated to be replaced by slashing its own finish time boolean value
                     setSlashing(false);
-                    Log.d("H","FLASE SLASHING");
                 }
             }
         }
     }
     public void draw(Canvas canvas)
     {
-        if (animation!=null)
-            canvas.drawBitmap(animation.getImage(),x,y,null);
+        if (animation!=null) {
+            //draw shadows by collision shapes +-
+            Paint mPaint = new Paint();
+            mPaint.setColor(Color.BLACK);
+            mPaint.setAlpha(40);
+            canvas.drawBitmap(animation.getImage(), x, y, null);
+            int shadowFactor;
+            //shadow drawing
+            //regular
+            if (!isJumping()) {
+                canvas.drawOval(new RectF(Main.player.getX() + Main.player.getDx() + 15, Main.player.getY() + Main.player.getDy() + 50
+                        , Main.player.getX() + Main.player.getDx() + 64 - 15, Main.player.getY() + Main.player.getDy() + 64), mPaint);
+            }
+            //jumping is visualised by shadow distance from character (Y)
+            else {
+                if (jumpingLevel <= Main.gameLoop.FPS/2) {
+                    shadowFactor = (jumpingLevel) * getSpeed();
+                    Log.d("H","first "+shadowFactor);
+                }
+                else if (jumpingLevel <= Main.gameLoop.FPS){
+                    shadowFactor = (Main.gameLoop.FPS - jumpingLevel +1) * getSpeed();
+                    Log.d("H","second "+shadowFactor);
+                }
+                else {
+                    shadowFactor = 0;
+                }
+                canvas.drawOval(new RectF(Main.player.getX() + Main.player.getDx() + 15, Main.player.getY() + Main.player.getDy() + 50
+                        + shadowFactor, Main.player.getX() + Main.player.getDx() + 64 - 15, Main.player.getY() + Main.player.getDy() + 64 + shadowFactor), mPaint);
+            }
+        }
     }
 
 }

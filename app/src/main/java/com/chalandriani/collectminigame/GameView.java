@@ -139,15 +139,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
             canvas.scale(scaleFactorX, scaleFactorY);
             bg.draw(canvas);
 
-            //draw shadows by collision shapes +-
-            Paint mPaint = new Paint();
-            mPaint.setColor(Color.BLACK);
-            mPaint.setAlpha(40);
-            canvas.drawOval(new RectF(Main.player.getX() + Main.player.getDx() + 15,Main.player.getY() + Main.player.getDy() + 50
-                    ,Main.player.getX() + Main.player.getDx() + 64 - 15,Main.player.getY() + Main.player.getDy() + 64),mPaint);
-            //canvas.drawOval(new RectF(player2.getX()+15,player2.getY()+50,player2.getX()+player2.getWidth()-15,player2.getY()+player2.getHeight()),mPaint);
-
-
             Main.player.draw(canvas);
             if (!Main.players.isEmpty()) {
                 for (Player player : Main.players) {

@@ -6,15 +6,16 @@ import android.view.SurfaceHolder;
 
 public class GameLoop extends Thread
 {
-    private int FPS = 4;
+    public static int FPS;
     private SurfaceHolder surfaceHolder;
     private GameView gameView;
     private boolean running;
-    public static Canvas canvas;
+    private Canvas canvas;
 
     public GameLoop(SurfaceHolder surfaceHolder, GameView gameView)
     {
         super();
+        FPS = 10;
         this.surfaceHolder = surfaceHolder;
         this.gameView = gameView;
     }

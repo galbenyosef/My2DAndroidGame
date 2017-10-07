@@ -32,6 +32,7 @@ public class FirebaseHandler {
 
         FirebaseApp.initializeApp(context);
         database  = FirebaseDatabase.getInstance();
+        database.setPersistenceEnabled(true);
         authentication = FirebaseAuth.getInstance();
         players_reference = database.getReference("players");
 

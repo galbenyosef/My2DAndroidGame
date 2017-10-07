@@ -24,6 +24,9 @@ public class Animation {
 
     public void setFrame(int i){currentFrame= i;}
 
+    public int getCurrentFrame() {
+        return currentFrame;
+    }
 
     public void update()
     {
