@@ -28,11 +28,19 @@ public class GameFragment extends Fragment {
         Main.player = new Player();
         Main.player.setPlayerName(name);
         Main.player.setCharacterId(id);
+        Main.player.setAnimation(Main.animator.getCharacter().getWalkAnimation(JoystickView.CENTER));
+        Main.player.setWidth(64);
+        Main.player.setHeight(64);
+        Main.player.setHpMax(100);
+        Main.player.setHp(100);
         Main.player.setSpeed(3);
         Main.player.setX(250);
         Main.player.setY(300);
         Main.player.setDirection(JoystickView.CENTER);
-        Main.player.setRectangle(null);
+        Main.player.setRectangle(new Rectangle(Main.player.getX()+Main.player.getWidth()/3,
+                Main.player.getY()+Main.player.getHeight()-Main.player.getHeight()/6
+                ,Main.player.getX()+Main.player.getWidth()-Main.player.getWidth()/3
+                ,Main.player.getY()+Main.player.getHeight()));
         return this;
     }
 

@@ -4,22 +4,25 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
+import android.util.SparseArray;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.HashMap;
 
 
 public class Main extends Activity {
 
     public static Resources resources;
-    public static AnimationManager animator;
+    public static AnimationManagerWalkingSealed animator;
     public static FragmentManager fragmentizer;
     public static GameLoop gameLoop;
     public static Player player;
-    public static ArrayList<Player> players;
+    public static HashMap<String,Player> players;
 
     long backPressedStartTime;
     boolean backPressed;
@@ -34,9 +37,9 @@ public class Main extends Activity {
         setContentView(R.layout.fragment_main);
 
         resources = getResources();
-        animator = new AnimationManager(getAssets());
+        animator = new AnimationManagerWalkingSealed(getAssets());
         fragmentizer = getFragmentManager();
-        players = new ArrayList<>();
+        players = new HashMap<>();
 
         FirebaseHandler.initialize(getApplicationContext());
         FragmentHandler.switchFragment(R.id.fragment_container, new LoginFragment());
@@ -54,11 +57,17 @@ public class Main extends Activity {
                 backPressed=false;
             else{
                 if (FirebaseHandler.player_reference != null) {
+                    FirebaseHandler.players_reference.removeEventListener(FirebaseHandler.EventListeners.playerUpdaterv2);
+                    players.clear();
                     gameLoop.setRunning(false);
                     FirebaseHandler.player_reference.setValue(null);
+                    FirebaseHandler.authentication.signOut();
+                  //  FirebaseHandler.database.goOffline();
                 }
                 finish();
             }
         }
     }
+
+
 }

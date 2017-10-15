@@ -7,6 +7,7 @@ import android.view.SurfaceHolder;
 public class GameLoop extends Thread
 {
     public static int FPS;
+    public static int frameCount;
     private SurfaceHolder surfaceHolder;
     private GameView gameView;
     private boolean running;
@@ -15,7 +16,8 @@ public class GameLoop extends Thread
     public GameLoop(SurfaceHolder surfaceHolder, GameView gameView)
     {
         super();
-        FPS = 10;
+        FPS = 6;
+        frameCount=0;
         this.surfaceHolder = surfaceHolder;
         this.gameView = gameView;
     }
@@ -53,6 +55,11 @@ public class GameLoop extends Thread
 
             timeMillis = (System.nanoTime() - startTime) / 1000000;
             waitTime = targetTime-timeMillis;
+
+            frameCount++;
+
+            if (frameCount==FPS)
+                frameCount=0;
 
             try{
                 this.sleep(waitTime);

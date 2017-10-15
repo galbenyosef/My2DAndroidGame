@@ -138,7 +138,7 @@ public class LoginFragment extends Fragment {
                                             switchFragment(R.id.fragment_container,new CharacterFragment());
                                 }
                                 else {
-                                    Toast.makeText(getActivity(), "Blade",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), "Error",Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });

@@ -71,7 +71,7 @@ public class UniversalLPCSpritesheet {
             case JoystickView.DOWN_RIGHT:
                 return makeAnimation(WALK_RIGHT,9,0,false);
             default:
-                return null;
+                return makeAnimation(WALK_DOWN,9,0,false);
         }
 
     }
