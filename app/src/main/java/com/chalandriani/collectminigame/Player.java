@@ -70,10 +70,10 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
     public void setWalking(boolean walking){
 
         if (!isSlashing() && !isJumping() && isChangedDirection() && walking) {
-            this.setAnimation(Main.animator.getCharacter().getWalkAnimation(getDirection()));
+            this.setAnimation(Main.animator.getCharacter(characterId).getWalkAnimation(getDirection()));
         }
         else if (this.walking && !walking){
-            this.setAnimation(Main.animator.getCharacter().getWalkAnimation(getDirection()));
+            this.setAnimation(Main.animator.getCharacter(characterId).getWalkAnimation(getDirection()));
         }
 
         setChangedDirection(false);
@@ -87,12 +87,12 @@ public class Player extends GameObject implements IMoveable,IDestroyable {
         if (!this.slashing && slashing) {
 
             slashingStartTime = System.nanoTime();
-            this.setAnimation(Main.animator.getCharacter().getSlashAnimation(getDirection()));
+            this.setAnimation(Main.animator.getCharacter(characterId).getSlashAnimation(getDirection()));
 
         }
         else if(this.slashing && !slashing) {
 
-            this.setAnimation(Main.animator.getCharacter().getWalkAnimation(getDirection()));
+            this.setAnimation(Main.animator.getCharacter(characterId).getWalkAnimation(getDirection()));
 
         }
 

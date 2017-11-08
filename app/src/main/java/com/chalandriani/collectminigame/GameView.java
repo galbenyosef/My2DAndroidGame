@@ -139,22 +139,22 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
     public void update()
     {
 
-//        GameObject objCollision = objectCollision();
-//        if (objCollision != null){
-//            Log.d("H","collision");
-//
-//            if (objCollision instanceof Player){
-//                   if (((Player) objCollision).isSlashing()){
-//                       Main.player.decreaseHp(5);
-//                       Log.d("H","Slashed by: " + ((Player) objCollision).getPlayerName());
-//                       if (Main.player.getHp() == 0){
-//                           Log.d("H",Main.player.getPlayerName() + " is dead by " + ((Player) objCollision).getPlayerName());
-//                       }
-//                }
-//            }
-//            Main.player.setDx(0);
-//            Main.player.setDy(0);
-//        }
+        GameObject objCollision = objectCollision();
+        if (objCollision != null){
+            Log.d("H","collision");
+
+            if (objCollision instanceof Player){
+                   if (((Player) objCollision).isSlashing()){
+                       Main.player.decreaseHp(5);
+                       Log.d("H","Slashed by: " + ((Player) objCollision).getPlayerName());
+                       if (Main.player.getHp() == 0){
+                           Log.d("H",Main.player.getPlayerName() + " is dead by " + ((Player) objCollision).getPlayerName());
+                       }
+                }
+            }
+            Main.player.setDx(0);
+            Main.player.setDy(0);
+        }
 
         if (mapCollision()) {
             Main.player.setDx(0);
@@ -171,14 +171,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
         }
 
         bg.update(Main.player.getDirection(), Main.player.getSpeed() / 2);
-//        if (Main.player.getX() <= 40) {
-//            Main.player.setX(Main.player.getX() + 200);
-//            bg.setX(bg.getX() + 200);
-//        }
-//        if (Main.player.getX() >= WIDTH - 30) {
-//            Main.player.setX(Main.player.getX() - 200);
-//            bg.setX(bg.getX() - 200);
-//        }
+        if (Main.player.getX() <= 40) {
+            Main.player.setX(Main.player.getX() + 200);
+            bg.setX(bg.getX() + 200);
+        }
+        if (Main.player.getX() >= WIDTH - 30) {
+            Main.player.setX(Main.player.getX() - 200);
+            bg.setX(bg.getX() - 200);
+        }
     }
     @Override
     public void draw(Canvas canvas)

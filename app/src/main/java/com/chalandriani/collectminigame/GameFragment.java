@@ -28,7 +28,7 @@ public class GameFragment extends Fragment {
         Main.player = new Player();
         Main.player.setPlayerName(name);
         Main.player.setCharacterId(id);
-        Main.player.setAnimation(Main.animator.getCharacter().getWalkAnimation(JoystickView.CENTER));
+        Main.player.setAnimation(Main.animator.getCharacter(id).getWalkAnimation(JoystickView.CENTER));
         Main.player.setWidth(64);
         Main.player.setHeight(64);
         Main.player.setHpMax(100);

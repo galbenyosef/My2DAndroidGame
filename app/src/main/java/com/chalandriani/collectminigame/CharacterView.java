@@ -27,7 +27,7 @@ public class CharacterView extends View {
         super.onDraw(canvas);
         canvas.drawColor(Color.TRANSPARENT);
         canvas.scale(5,5);
-        canvas.drawBitmap(Main.animator.getCharacter().getResource(),0,-75,null);
+        canvas.drawBitmap(Main.animator.getCharacter(characterId).getResource(),0,-75,null);
     }
 
     void nextCharacter(){

@@ -53,7 +53,7 @@ public class FirebaseHandler {
                 GenericTypeIndicator<Player> player_db = new GenericTypeIndicator<Player>(){};
                 final Player newPlayer = dataSnapshot.getValue(player_db);
                 if (!newPlayer.getPlayerName().equalsIgnoreCase(Main.player.getPlayerName())) {
-                    newPlayer.setAnimation(Main.animator.getCharacter().getWalkAnimation(JoystickView.CENTER));
+                    newPlayer.setAnimation(Main.animator.getCharacter(newPlayer.getCharacterId()).getWalkAnimation(JoystickView.CENTER));
                     Main.players.put(newPlayer.getPlayerName(),newPlayer);
                     players_reference.child(newPlayer.getPlayerName()).keepSynced(true);
                     players_reference.child(newPlayer.getPlayerName()).addChildEventListener(new ChildEventListener() {

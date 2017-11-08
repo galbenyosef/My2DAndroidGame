@@ -18,7 +18,7 @@ import java.util.HashMap;
 public class Main extends Activity {
 
     public static Resources resources;
-    public static AnimationManagerWalkingSealed animator;
+    public static AnimationManager animator;
     public static FragmentManager fragmentizer;
     public static GameLoop gameLoop;
     public static Player player;
@@ -37,7 +37,7 @@ public class Main extends Activity {
         setContentView(R.layout.fragment_main);
 
         resources = getResources();
-        animator = new AnimationManagerWalkingSealed(getAssets());
+        animator = new AnimationManager(getAssets());
         fragmentizer = getFragmentManager();
         players = new HashMap<>();
 
